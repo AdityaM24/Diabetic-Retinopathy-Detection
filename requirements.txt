@@ -8,4 +8,4 @@ numpy<2.0.0
 # However, for this specific request, we will use tflite-runtime from PyPI if available, or a known compatible version.
 # tflite-runtime checks:
 # https://pypi.org/project/tflite-runtime/
-tflite-runtime
+tensorflow-cpu

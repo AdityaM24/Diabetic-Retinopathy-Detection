@@ -1,0 +1,9 @@
+*.h5
+train/
+test/
+val/
+gaussian_filtered_images/
+improv.ipynb
+__pycache__/
+*.pyc
+requirements-local.txt

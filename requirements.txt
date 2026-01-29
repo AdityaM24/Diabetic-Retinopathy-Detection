@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+python-multipart
+Pillow
+numpy<2.0.0
+# Using a specific wheel or version for tflite-runtime is often required for linux environments on Vercel
+# But for now, we try the index that offers it, or fallback to tensorflow-cpu if size allows. 
+# However, for this specific request, we will use tflite-runtime from PyPI if available, or a known compatible version.
+# tflite-runtime checks:
+# https://pypi.org/project/tflite-runtime/
+tflite-runtime

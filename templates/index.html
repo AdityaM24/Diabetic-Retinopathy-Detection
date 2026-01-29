@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diabetic Retinopathy Detection</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; margin-top: 50px; background-color: #f0f2f5; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; margin-bottom: 30px; }
+        .upload-btn-wrapper { position: relative; overflow: hidden; display: inline-block; margin-bottom: 20px; }
+        .btn { border: 2px solid #3498db; color: #3498db; background-color: white; padding: 10px 25px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: all 0.3s; }
+        .btn:hover { background-color: #3498db; color: white; }
+        .upload-btn-wrapper input[type=file] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; }
+        #preview { max-width: 100%; margin-top: 20px; border-radius: 8px; display: none; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        #result { margin-top: 30px; font-size: 1.2em; font-weight: bold; min-height: 50px; }
+        .DR { color: #e74c3c; }
+        .No_DR { color: #27ae60; }
+        .loader { border: 5px solid #f3f3f3; border-top: 5px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; display: none; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👁️ Diabetic Retinopathy Check</h1>
+        
+        <div class="upload-btn-wrapper">
+            <button class="btn">Upload Retinal Image</button>
+            <input type="file" name="file" id="fileInput" accept="image/*">
+        </div>
+
+        <div>
+            <img id="preview" src="#" alt="Image preview">
+        </div>
+
+        <div class="loader" id="loader"></div>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const preview = document.getElementById('preview');
+        const resultDiv = document.getElementById('result');
+        const loader = document.getElementById('loader');
+
+        fileInput.onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Show preview
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = 'block';
+            resultDiv.innerHTML = '';
+            loader.style.display = 'block';
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                
+                loader.style.display = 'none';
+                if (data.error) {
+                    resultDiv.innerHTML = `<span style="color:red">Error: ${data.error}</span>`;
+                } else {
+                    const colorClass = data.prediction === 'DR' ? 'DR' : 'No_DR';
+                    resultDiv.innerHTML = `Prediction: <span class="${colorClass}">${data.prediction}</span><br>Confidence: ${data.confidence}`;
+                }
+            } catch (error) {
+                loader.style.display = 'none';
+                resultDiv.innerHTML = `<span style="color:red">Error: ${error.message}</span>`;
+            }
+        };
+    </script>
+</body>
+</html>
